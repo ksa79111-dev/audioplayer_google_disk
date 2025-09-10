@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Музыкальный плеер</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f7f7f7;
+            text-align: center;
+            padding: 50px 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1E90FF; }
+        .link-box {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f8ff;
+            border: 1px dashed #1E90FF;
+            border-radius: 8px;
+            word-break: break-all;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin-top: 10px;
+            background: #1E90FF;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .btn:hover { background: #0066cc; }
+        .loading { color: #888; font-style: italic; }
+        footer { margin-top: 40px; color: #aaa; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Музыкальный плеер</h1>
+        <p>Актуальная ссылка на плеер:</p>
+
+        <div id="player-link" class="loading">Загрузка...</div>
+
+        <script>
+            fetch('link.json')
+                .then(response => response.json())
+                .then(data => {
+                    const linkDiv = document.getElementById('player-link');
+                    if (data.url) {
+                        linkDiv.innerHTML = `
+                            <div class="link-box">${data.url}</div>
+                            <a href="${data.url}" target="_blank" class="btn">▶️ Перейти к плееру</a>
+                            <p><small>Обновлено: ${data.updated}</small></p>
+                        `;
+                    } else {
+                        linkDiv.textContent = "Плеер сейчас не запущен.";
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('player-link').textContent = "Не удалось загрузить ссылку.";
+                    console.error("Ошибка:", err);
+                });
+        </script>
+    </div>
+    <footer>Страница обновляется автоматически при запуске плеера.</footer>
+</body>
+</html>
