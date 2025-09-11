@@ -43,6 +43,21 @@
         .loading { color: #888; font-style: italic; }
         footer { margin-top: 40px; color: #aaa; font-size: 0.9em; }
     </style>
+    <!-- В <head> добавь скрипт -->
+    <script>
+    // Автообновление ссылки каждые 10 секунд
+    setInterval(() => {
+        fetch('/link.json?t=' + Date.now())
+            .then(r => r.json())
+            .then(data => {
+                const linkEl = document.getElementById('player-link');
+                if (data.url) {
+                    linkEl.innerHTML = `<a href="${data.url}?t=${Date.now()}" target="_blank">🎧 Перейти к плееру</a>`;
+                }
+            })
+            .catch(console.error);
+    }, 10000); // каждые 10 секунд
+    </script>
 </head>
 <body>
     <div class="container">
