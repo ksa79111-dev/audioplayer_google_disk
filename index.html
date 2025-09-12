@@ -43,21 +43,6 @@
         .loading { color: #888; font-style: italic; }
         footer { margin-top: 40px; color: #aaa; font-size: 0.9em; }
     </style>
-    <!-- В <head> добавь скрипт -->
-    <script>
-    // Автообновление ссылки каждые 10 секунд
-    setInterval(() => {
-        fetch('/link.json?t=' + Date.now())
-            .then(r => r.json())
-            .then(data => {
-                const linkEl = document.getElementById('player-link');
-                if (data.url) {
-                    linkEl.innerHTML = `<a href="${data.url}?t=${Date.now()}" target="_blank">🎧 Перейти к плееру</a>`;
-                }
-            })
-            .catch(console.error);
-    }, 10000); // каждые 10 секунд
-    </script>
 </head>
 <body>
     <div class="container">
@@ -65,28 +50,39 @@
         <p>Актуальная ссылка на плеер:</p>
 
         <div id="player-link" class="loading">Загрузка...</div>
+    </div>
+    <footer>Страница обновляется автоматически при запуске плеера.</footer>
 
-        <script>
-            fetch('link.json')
-                .then(response => response.json())
+    <script>
+        function updateLink() {
+            const url = 'https://cdn.jsdelivr.net/gh/ksa79111-dev/audioplayer_google_disk@main/link.json';
+            
+            fetch(url + '?t=' + Date.now())
+                .then(r => {
+                    if (!r.ok) throw new Error('Сервер вернул ' + r.status);
+                    return r.json();
+                })
                 .then(data => {
                     const linkDiv = document.getElementById('player-link');
                     if (data.url) {
                         linkDiv.innerHTML = `
                             <div class="link-box">${data.url}</div>
-                            <a href="${data.url}" target="_blank" class="btn">▶️ Перейти к плееру</a>
-                            <p><small>Обновлено: ${data.updated}</small></p>
+                            <a href="${data.url}?t=${Date.now()}" target="_blank" class="btn">▶️ Перейти к плееру</a>
+                            <p><small>Обновлено: ${data.updated || 'неизвестно'}</small></p>
                         `;
                     } else {
                         linkDiv.textContent = "Плеер сейчас не запущен.";
                     }
                 })
                 .catch(err => {
-                    document.getElementById('player-link').textContent = "Не удалось загрузить ссылку.";
                     console.error("Ошибка:", err);
+                    document.getElementById('player-link').textContent = "🔄 Ошибка загрузки... Повтор через 10 сек";
+                    setTimeout(updateLink, 10000);
                 });
-        </script>
-    </div>
-    <footer>Страница обновляется автоматически при запуске плеера.</footer>
+        }
+
+        updateLink();               // Сразу
+        setInterval(updateLink, 10000); // Каждые 10 сек
+    </script>
 </body>
 </html>
