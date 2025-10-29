@@ -123,13 +123,13 @@
                 tracks = await response.json();
                 if (tracks.length > 0) {
                     document.getElementById('direct-player').style.display = 'block';
-                    playTrack(0);
+                    playTrack(0); // ⚠️ ВАЖНО: play() должен быть здесь, после клика!
                 } else {
-                    alert("❌ Нет доступных треков.");
+                    alert("❌ Нет треков.");
                 }
             } catch (e) {
-                console.error("Не удалось загрузить треки:", e);
-                alert("❌ Не удалось загрузить список треков.");
+                console.error("Ошибка:", e);
+                alert("Не удалось загрузить треки.");
             }
         }
 
@@ -150,9 +150,12 @@
         // Функция для запуска прямого воспроизведения
         function startDirectPlay() {
             if (tracks.length === 0) {
-                loadTracks(); // если треки ещё не загружены
+                // Если треки ещё не загружены — грузим и ждём
+                loadTracks();
             } else {
-                playTrack((currentTrackIndex + 1) % tracks.length); // следующий трек
+                // Если уже есть треки — сразу запускаем следующий
+                const nextIndex = (currentTrackIndex + 1) % tracks.length;
+                playTrack(nextIndex);
             }
         }
     </script>
