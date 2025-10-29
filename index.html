@@ -54,7 +54,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎵 Музык555альный плеер</h1>
+        <h1>🎵 Музык666альный плеер</h1>
         <p>Актуальная ссылка на плеер:</p>
         <p>https://20d5c1b8523aaf.lhr.life</p>
         <p>12OvdZiyaAjaSW1W3Pm3O6M-ekZYk4-am</p>
@@ -133,14 +133,12 @@
         // === РЕЖИМ 2: Воспроизведение через iframe Google Drive ===
         function startPlayback(fileId) {
             const iframe = document.getElementById('google-drive-player');
-            iframe.src = '';
-            
+            iframe.src = ''; // Сброс
+        
             setTimeout(() => {
                 iframe.src = `https://drive.google.com/file/d/${fileId}/preview?autoplay=1`;
                 iframe.style.display = 'block';
-                
-                // Прокрутка к плееру — имитация внимания пользователя
-                iframe.scrollIntoView({ behavior: 'smooth' });
+                iframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
         }
 
