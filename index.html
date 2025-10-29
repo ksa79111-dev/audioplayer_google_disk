@@ -133,9 +133,15 @@
         // === РЕЖИМ 2: Воспроизведение через iframe Google Drive ===
         function startPlayback(fileId) {
             const iframe = document.getElementById('google-drive-player');
-            // ⚠️ Убрали пробелы в URL!
-            iframe.src = `https://drive.google.com/file/d/${fileId}/preview?autoplay=1`;
-            iframe.style.display = 'block';
+        
+            // Сначала очистим src, чтобы сбросить состояние
+            iframe.src = '';
+        
+            // Установим новый src с autoplay
+            setTimeout(() => {
+                iframe.src = `https://drive.google.com/file/d/${fileId}/preview?autoplay=1`;
+                iframe.style.display = 'block';
+            }, 100);
         }
 
         // === РЕЖИМ 3: Прямое воспроизведение через твой сервер ===
