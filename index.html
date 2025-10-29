@@ -40,22 +40,43 @@
             font-weight: bold;
         }
         .btn:hover { background: #0066cc; }
+
+        /* Стили для встроенного плеера */
+        #direct-player {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e6ffe6;
+            border-radius: 8px;
+        }
         .loading { color: #888; font-style: italic; }
         footer { margin-top: 40px; color: #aaa; font-size: 0.9em; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎵 Музыка111222льный плеер</h1>
-        <p>Актуальная ссылка на плеер:</p>
-        <p>https://e699b890c08baf.lhr.life</p>
-        <p>12OvdZiyaAjaSW1W3Pm3O6M-ekZYk4-am</p>
+        <h1>🎵 Музыкальный плеер</h1>
 
+        <!-- === РЕЖИМ 1: Ссылка на внешний плеер === -->
+        <p><strong>Актуальная ссылка на веб-плеер:</strong></p>
         <div id="player-link" class="loading">Загрузка...</div>
+
+        <!-- === РЕЖИМ 2: Встроенный плеер === -->
+        <div id="direct-player" style="display: none;">
+            <h2>🎧 Прямое воспроизведение</h2>
+            <audio id="audio-player" controls autoplay></audio>
+            <p>Сейчас играет: <span id="current-track">Загрузка...</span></p>
+            <p><small>Переключение треков — автоматическое.</small></p>
+        </div>
+
+        <!-- Кнопка для ручного запуска прямого воспроизведения -->
+        <button onclick="startDirectPlay()" style="margin: 10px; padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 6px;">
+            ▶️ Запустить прямое воспроизведение
+        </button>
     </div>
-    <footer>Страница обновляется авто111матически при запуске плеера.</footer>
+    <footer>Страница обновляется автоматически при запуске плеера.</footer>
 
     <script>
+        // === РЕЖИМ 1: Обновление ссылки на плеер ===
         function updateLink() {
             const url = 'https://cdn.jsdelivr.net/gh/ksa79111-dev/audioplayer_google_disk@main/link.json';
             
@@ -77,14 +98,60 @@
                     }
                 })
                 .catch(err => {
-                    console.error("Ошибка:", err);
-                    document.getElementById('player-link').textContent = "🔄 Ошибка загрузки... Повтор через 10 сек";
+                    console.error("Ошибка загрузки ссылки:", err);
+                    document.getElementById('player-link').textContent = "🔄 Ошибка... Повтор через 10 сек";
                     setTimeout(updateLink, 10000);
                 });
         }
 
-        updateLink();               // Сразу
-        setInterval(updateLink, 10000); // Каждые 10 сек
+        // Запускаем обновление каждые 10 секунд
+        updateLink();
+        setInterval(updateLink, 10000);
+
+        // === РЕЖИМ 2: Прямое воспроизведение с Google Drive ===
+        const audio = document.getElementById('audio-player');
+        const currentTrackSpan = document.getElementById('current-track');
+        let tracks = [];
+        let currentTrackIndex = 0;
+
+        async function loadTracks() {
+            try {
+                const response = await fetch('https://cdn.jsdelivr.net/gh/ksa79111-dev/audioplayer_google_disk@main/tracks.json?t=' + Date.now());
+                tracks = await response.json();
+                if (tracks.length > 0) {
+                    document.getElementById('direct-player').style.display = 'block';
+                    playTrack(0);
+                } else {
+                    alert("❌ Нет доступных треков.");
+                }
+            } catch (e) {
+                console.error("Не удалось загрузить треки:", e);
+                alert("❌ Не удалось загрузить список треков.");
+            }
+        }
+
+        function playTrack(index) {
+            if (index >= tracks.length || index < 0) return;
+            currentTrackIndex = index;
+            const track = tracks[index];
+            audio.src = track.url;
+            currentTrackSpan.textContent = track.name;
+            audio.play();
+        }
+
+        audio.addEventListener('ended', () => {
+            const nextIndex = (currentTrackIndex + 1) % tracks.length;
+            playTrack(nextIndex);
+        });
+
+        // Функция для запуска прямого воспроизведения
+        function startDirectPlay() {
+            if (tracks.length === 0) {
+                loadTracks(); // если треки ещё не загружены
+            } else {
+                playTrack((currentTrackIndex + 1) % tracks.length); // следующий трек
+            }
+        }
     </script>
 </body>
 </html>
