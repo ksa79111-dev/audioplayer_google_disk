@@ -135,11 +135,26 @@
 
         function playTrack(index) {
             if (index >= tracks.length || index < 0) return;
-            currentTrackIndex = index;
+        
             const track = tracks[index];
-            audio.src = track.url;
+            currentTrackIndex = index;
+            
+            // ✅ Используем ТВОЙ сервер как прокси
+            const proxyUrl = 'https://20d5c1b8523aaf.lhr.life/stream/' + track.id;
+            
+            audio.src = proxyUrl;
             currentTrackSpan.textContent = track.name;
-            audio.play();
+        
+            // Пытаемся воспроизвести
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log("✅ Трек начат");
+                }).catch(error => {
+                    console.warn("❌ Автовоспроизведение заблокировано:", error);
+                    alert("Пожалуйста, нажмите ▶️ на плеере");
+                });
+            }
         }
 
         audio.addEventListener('ended', () => {
